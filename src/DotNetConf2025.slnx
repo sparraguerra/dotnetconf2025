@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="CSharp13/CSharp13.csproj" />
+  <Project Path="CSharp14/CSharp14.csproj" Id="0d81d9b8-a869-4d92-85bd-443d0e260e9e" />
+</Solution>
