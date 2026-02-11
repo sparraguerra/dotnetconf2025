@@ -9,7 +9,7 @@ public static class VectorSearchDemo
     public static async Task RunAsync()
     {
         Console.WriteLine("\n=== EF Core 10: Vector Search (Conceptual) ===\n");
-Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure SQL Database");
+        Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure SQL Database");
         Console.WriteLine("Esta demo muestra el concepto, pero usa InMemory database\n");
 
         using var context = new BloggingContext();
@@ -17,12 +17,12 @@ Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure 
         await context.Database.EnsureCreatedAsync();
 
         // ===== 1. Modelo con tipo Vector =====
-        Console.WriteLine("1. Configuraci�n del modelo:");
+        Console.WriteLine("1. Configuración del modelo:");
         Console.WriteLine("   public class Blog {");
         Console.WriteLine("       [Column(TypeName = \"vector(1536)\")]");
         Console.WriteLine("       public SqlVector<float>? Embedding { get; set; }");
-         Console.WriteLine("   }");
-         Console.WriteLine("   📊 vector(1536) es el tama�o t�pico para embeddings de OpenAI");
+        Console.WriteLine("   }");
+        Console.WriteLine("   📊 vector(1536) es el tamaño típico para embeddings de OpenAI");
 
         // ===== 2. Insertar embeddings =====
         Console.WriteLine("\n2. Insertar blogs con embeddings:");
@@ -74,10 +74,10 @@ Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure 
 
         context.Blogs.AddRange(blogs);
         await context.SaveChangesAsync();
-        Console.WriteLine("   ✅ 3 blogs creados (en producci�n con embeddings)");
+        Console.WriteLine("   ✅ 3 blogs creados (en producción con embeddings)");
 
         // ===== 3. Similarity Search con VectorDistance =====
-        Console.WriteLine("\n3. B�squeda por similitud sem�ntica:");
+        Console.WriteLine("\n3. Búsqueda por similitud semántica:");
         Console.WriteLine("   var queryEmbedding = /* vector de la query del usuario */;");
         Console.WriteLine("   var similarBlogs = context.Blogs");
         Console.WriteLine("       .OrderBy(b => EF.Functions.VectorDistance(");
@@ -87,9 +87,9 @@ Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure 
         Console.WriteLine("   ");
         Console.WriteLine("   🔍 Genera SQL: ORDER BY VECTOR_DISTANCE('cosine', ...)");
 
-        // ===== 4. M�tricas de distancia =====
-        Console.WriteLine("\n4. M�tricas de distancia disponibles:");
-        Console.WriteLine("   - 'cosine': Similitud de coseno (m�s com�n para texto)");
+        // ===== 4. Métricas de distancia =====
+        Console.WriteLine("\n4. Métricas de distancia disponibles:");
+        Console.WriteLine("   - 'cosine': Similitud de coseno (más común para texto)");
         Console.WriteLine("   - 'euclidean': Distancia euclidiana");
         Console.WriteLine("   - 'dot': Producto punto");
 
@@ -98,11 +98,11 @@ Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure 
         Console.WriteLine("   🎯 Semantic Search: Buscar por significado, no por keywords");
         Console.WriteLine("   🎯 RAG (Retrieval-Augmented Generation): Para LLMs");
         Console.WriteLine("   🎯 Recommendation Systems: Productos o contenido similar");
-        Console.WriteLine("   🎯 Image Search: B�squeda de im�genes similares");
+        Console.WriteLine("   🎯 Image Search: Búsqueda de imágenes similares");
         Console.WriteLine("   🎯 Anomaly Detection: Detectar patrones inusuales");
 
-        // ===== 6. Integraci�n con AI =====
-        Console.WriteLine("\n6. Integraci�n con generadores de embeddings:");
+        // ===== 6. Integración con AI =====
+        Console.WriteLine("\n6. Integración con generadores de embeddings:");
         Console.WriteLine("   // Usando Microsoft.Extensions.AI");
         Console.WriteLine("   IEmbeddingGenerator<string, Embedding<float>> generator = ...;");
         Console.WriteLine("   ");
@@ -119,8 +119,8 @@ Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure 
 
         // ===== 7. Performance =====
         Console.WriteLine("\n7. Consideraciones de rendimiento:");
-        Console.WriteLine("   ? �ndices vectoriales optimizados en SQL Server 2025");
-        Console.WriteLine("   ? B�squeda eficiente incluso con millones de vectores");
+        Console.WriteLine("   📊 Índices vectoriales optimizados en SQL Server 2025");
+        Console.WriteLine("   🎯 Búsqueda eficiente incluso con millones de vectores");
         Console.WriteLine("   ⚡ Combinar con filtros tradicionales para mejores resultados");
         Console.WriteLine("   ");
         Console.WriteLine("   Ejemplo con filtros:");
@@ -134,10 +134,10 @@ Console.WriteLine("⚠️  NOTA: Vector search requiere SQL Server 2025 o Azure 
         Console.WriteLine("   En Azure Cosmos DB se puede combinar:");
         Console.WriteLine("   - Vector similarity search");
         Console.WriteLine("   - Full-text search");
-        Console.WriteLine("   Usando la funci�n RRF (Reciprocal Rank Fusion)");
+        Console.WriteLine("   Usando la función RRF (Reciprocal Rank Fusion)");
 
-Console.WriteLine("\n🎯 Vector Search permite b�squedas sem�nticas potentes");
-Console.WriteLine("🎯 Esencial para aplicaciones AI modernas");
-Console.WriteLine("🎯 Disponible en SQL Server 2025 y Azure SQL Database");
+        Console.WriteLine("\n🎯 Vector Search permite búsquedas semánticas potentes");
+        Console.WriteLine("🎯 Esencial para aplicaciones AI modernas");
+        Console.WriteLine("🎯 Disponible en SQL Server 2025 y Azure SQL Database");
     }
 }

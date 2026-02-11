@@ -24,7 +24,7 @@ public static class ComplexTypesDemo
             CreatedDate = DateTime.Now,
             Details = new BlogDetails
             {
-                Description = "Un blog sobre tecnolog�a",
+                Description = "Un blog sobre tecnología",
                 Viewers = 1000,
                 LastUpdated = DateTime.Now
             },
@@ -72,7 +72,7 @@ public static class ComplexTypesDemo
         var allBlogs = await context.Blogs.ToListAsync();
         var highlyViewedBlogs = allBlogs.Where(b => b.Details.Viewers > 3000).ToList();
 
-        Console.WriteLine($"  📊 Blogs con m�s de 3000 viewers: {highlyViewedBlogs.Count}");
+        Console.WriteLine($"  📊 Blogs con más de 3000 viewers: {highlyViewedBlogs.Count}");
         foreach (var blog in highlyViewedBlogs)
         {
             Console.WriteLine($"    - {blog.Name}: {blog.Details.Viewers} viewers");
@@ -85,7 +85,7 @@ public static class ComplexTypesDemo
         var originalAddress = customer.BillingAddress;
         
         // Con complex types, esto funciona correctamente (value semantics)
-        // Con owned entities dar�a error
+        // Con owned entities daría error
         customer.BillingAddress = customer.BillingAddress; // Copia de valores
         await context.SaveChangesAsync();
         Console.WriteLine("  ✅ Assignment de complex types funciona correctamente");
@@ -107,7 +107,7 @@ public static class ComplexTypesDemo
             // Address es un struct, no una clase
             BillingAddress = new Address
             {
-                Street = "Gran V�a",
+                Street = "Gran Vía",
                 StreetNumber = 45,
                 City = "Barcelona",
                 PostalCode = "08001"
@@ -116,10 +116,10 @@ public static class ComplexTypesDemo
 
         context.Blogs.Add(blog3);
         await context.SaveChangesAsync();
-        Console.WriteLine($"  ✅ Blog '{blog3.Name}' con Address como struct");
+        Console.WriteLine($"  🎯 Blog '{blog3.Name}' con Address como struct");
 
-        // ===== 6. Comparaci�n de Complex Types =====
-        Console.WriteLine("\n6. Comparaci�n de Complex Types en queries:");
+        // ===== 6. Comparación de Complex Types =====
+        Console.WriteLine("\n6. Comparación de Complex Types en queries:");
         
         var searchAddress = new Address
         {
@@ -129,8 +129,8 @@ public static class ComplexTypesDemo
             PostalCode = "28001"
         };
         
-        // Con complex types, la comparaci�n es por valor
-        // (Con owned entities comparar�a por identidad)
+        // Con complex types, la comparación es por valor
+        // (Con owned entities compararía por identidad)
         // InMemory DB requiere client evaluation
         var allBlogsForFiltering = await context.Blogs.ToListAsync();
         var blogsInMadrid = allBlogsForFiltering

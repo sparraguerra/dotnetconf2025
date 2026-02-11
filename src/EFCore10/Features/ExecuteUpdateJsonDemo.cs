@@ -57,7 +57,7 @@ public static class ExecuteUpdateJsonDemo
 
         context.Blogs.AddRange(blogs);
         await context.SaveChangesAsync();
-Console.WriteLine("✅ 3 blogs creados\n");
+        Console.WriteLine("✅ 3 blogs creados\n");
 
         // ===== 1. Actualizar una propiedad JSON =====
         Console.WriteLine("1. Actualizar viewers en JSON column:");
@@ -71,8 +71,8 @@ Console.WriteLine("✅ 3 blogs creados\n");
         var updatedBlog = await context.Blogs.FirstAsync(b => b.Name == "Tech News");
         Console.WriteLine($"  ✅ {updatedBlog.Name} - Viewers: {updatedBlog.Details.Viewers}");
 
-        // ===== 2. Actualizar m�ltiples propiedades JSON =====
-        Console.WriteLine("\n2. Actualizar m�ltiples propiedades en JSON:");
+        // ===== 2. Actualizar múltiples propiedades JSON =====
+        Console.WriteLine("\n2. Actualizar múltiples propiedades en JSON:");
         
         await context.Blogs
             .Where(b => b.Details.Viewers > 2000)
@@ -90,8 +90,8 @@ Console.WriteLine("✅ 3 blogs creados\n");
             Console.WriteLine($"    - {blog.Name}: {blog.Details.Viewers} viewers");
         }
 
-        // ===== 3. Actualizaci�n condicional en JSON =====
-        Console.WriteLine("\n3. Actualizaci�n condicional basada en propiedades JSON:");
+        // ===== 3. Actualización condicional en JSON =====
+        Console.WriteLine("\n3. Actualización condicional basada en propiedades JSON:");
         
         await context.Blogs
             .Where(b => b.Details.Viewers < 2000)
@@ -119,7 +119,7 @@ Console.WriteLine("✅ 3 blogs creados\n");
             .Where(b => b.Name.Contains("Blog"))
             .ExecuteUpdateAsync(s =>
             {
-                // EF Core 10: Ahora se puede usar c�digo imperativo
+                // EF Core 10: Ahora se puede usar código imperativo
                 if (shouldIncrementViewers)
                 {
                     s.SetProperty(b => b.Details.Viewers, b => b.Details.Viewers + 100);
@@ -131,7 +131,7 @@ Console.WriteLine("✅ 3 blogs creados\n");
                 }
             });
 
-        Console.WriteLine("  ? Actualizaci�n condicional completada");
+        Console.WriteLine("  ✅ Actualización condicional completada");
 
         // ===== 5. Bulk update con JSON =====
         Console.WriteLine("\n5. Bulk update eficiente en JSON:");
@@ -141,7 +141,7 @@ Console.WriteLine("✅ 3 blogs creados\n");
                 .SetProperty(b => b.Details.LastUpdated, DateTime.Now)
                 .SetProperty(b => b.Details.Viewers, b => b.Details.Viewers + 10));
 
-        Console.WriteLine($"  ✅ {affectedRows} filas actualizadas en una sola operaci�n");
+        Console.WriteLine($"  ✅ {affectedRows} filas actualizadas en una sola operación");
 
         // Mostrar estado final
         Console.WriteLine("\n6. Estado final de todos los blogs:");

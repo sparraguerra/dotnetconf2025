@@ -52,10 +52,10 @@ public static class LinqImprovementsDemo
 
         context.Posts.AddRange(posts);
         await context.SaveChangesAsync();
-Console.WriteLine("✅ Datos de prueba creados\n");
+        Console.WriteLine("✅ Datos de prueba creados\n");
 
-        // ===== 1. Parameterized Collections - M�ltiples par�metros (EF 10 default) =====
-        Console.WriteLine("1. Parameterized Collections con m�ltiples par�metros:");
+        // ===== 1. Parameterized Collections - Múltiples parámetros (EF 10 default) =====
+        Console.WriteLine("1. Parameterized Collections con múltiples parámetros:");
         
         int[] blogIds = [1, 2, 3];
         var selectedBlogs = await context.Blogs
@@ -66,7 +66,7 @@ Console.WriteLine("✅ Datos de prueba creados\n");
         Console.WriteLine("  🔑 EF 10 genera: WHERE [b].[Id] IN (@ids1, @ids2, @ids3)");
         Console.WriteLine("  🔑 Evita plan cache bloat y proporciona cardinality info");
 
-        // ===== 2. Parameterized Collections con diferentes tama�os =====
+        // ===== 2. Parameterized Collections con diferentes tamaños =====
         Console.WriteLine("\n2. Parameter padding para optimizar plan cache:");
         
         int[] smallList = [1, 2];
@@ -77,10 +77,10 @@ Console.WriteLine("✅ Datos de prueba creados\n");
 
         Console.WriteLine($"  📊 Query con 2 elementos: {result1} resultados");
         Console.WriteLine($"  📊 Query con 5 elementos: {result2} resultados");
-        Console.WriteLine("  🔑 EF 10 hace padding de par�metros para reducir SQLs distintos");
+        Console.WriteLine("  🔑 EF 10 hace padding de parámetros para reducir SQLs distintos");
 
-        // ===== 3. Control de traducci�n de colecciones =====
-        Console.WriteLine("\n3. Control expl�cito de traducci�n con EF.Constant:");
+        // ===== 3. Control de traducción de colecciones =====
+        Console.WriteLine("\n3. Control explícito de traducción con EF.Constant:");
         
         string[] tags = ["C#", "Technology"];
         
@@ -89,14 +89,14 @@ Console.WriteLine("✅ Datos de prueba creados\n");
             .Where(b => b.Tags.Any(t => EF.Constant(tags).Contains(t)))
             .ToListAsync();
 
-        Console.WriteLine($"  📊 Blogs con tags espec�ficos: {blogsWithTags.Count}");
-        Console.WriteLine("  🔑 EF.Constant() permite controlar el modo de traducci�n");
+        Console.WriteLine($"  📊 Blogs con tags específicos: {blogsWithTags.Count}");
+        Console.WriteLine("  🔑 EF.Constant() permite controlar el modo de traducción");
 
         // ===== 4. LeftJoin operator (conceptual con InMemory) =====
         Console.WriteLine("\n4. LEFT JOIN operator de .NET 10:");
         Console.WriteLine("  🔑 Sintaxis simplificada para LEFT JOIN");
         Console.WriteLine("  🔑 Antes: GroupJoin + SelectMany + DefaultIfEmpty");
-        Console.WriteLine("  🔑 Ahora: LeftJoin m�todo directo");
+        Console.WriteLine("  🔑 Ahora: LeftJoin método directo");
         Console.WriteLine("  📝 Ejemplo conceptual:");
         Console.WriteLine("      var query = context.Blogs");
         Console.WriteLine("          .LeftJoin(context.Posts,");
@@ -124,8 +124,8 @@ Console.WriteLine("✅ Datos de prueba creados\n");
         // ===== 6. Traducciones mejoradas de DateOnly =====
         Console.WriteLine("\n6. Nuevas traducciones de fecha/hora:");
         Console.WriteLine("  📅 DateOnly.ToDateTime() - Convertir DateOnly a DateTime");
-        Console.WriteLine("  📅 DateOnly.DayNumber - Obtener n�mero de d�a");
-        Console.WriteLine("  📅 DatePart.Microsecond y Nanosecond - Precisi�n mejorada");
+        Console.WriteLine("  📅 DateOnly.DayNumber - Obtener número de día");
+        Console.WriteLine("  📅 DatePart.Microsecond y Nanosecond - Precisión mejorada");
         Console.WriteLine("  🔑 COALESCE optimizado como ISNULL en SQL Server");
 
         // ===== 7. Optimizaciones de LINQ =====

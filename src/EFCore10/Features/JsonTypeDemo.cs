@@ -9,7 +9,7 @@ public static class JsonTypeDemo
     public static async Task RunAsync()
     {
         Console.WriteLine("\n=== EF Core 10: JSON Data Type Support ===\n");
-        Console.WriteLine("??  NOTA: El nuevo tipo 'json' requiere SQL Server 2025 o Azure SQL");
+        Console.WriteLine("⚠️  NOTA: El nuevo tipo 'json' requiere SQL Server 2025 o Azure SQL");
         Console.WriteLine("Esta demo usa InMemory database, pero muestra los conceptos\n");
 
         using var context = new BloggingContext();
@@ -24,20 +24,20 @@ public static class JsonTypeDemo
         Console.WriteLine("   Ahora (SQL Server 2025):");
         Console.WriteLine("   CREATE TABLE Blogs ([Details] json NOT NULL)");
         Console.WriteLine("   ");
-        Console.WriteLine("   ?? Mejor rendimiento");
-        Console.WriteLine("   ?? Validaci�n de JSON a nivel de base de datos");
-        Console.WriteLine("   ?? Optimizaciones espec�ficas para JSON");
+        Console.WriteLine("   ⚡ Mejor rendimiento");
+        Console.WriteLine("   ✅ Validación de JSON a nivel de base de datos");
+        Console.WriteLine("   🎯 Optimizaciones específicas para JSON");
 
-        // ===== 2. Configuraci�n autom�tica =====
-        Console.WriteLine("\n2. Configuraci�n autom�tica en EF Core 10:");
+        // ===== 2. Configuración automática =====
+        Console.WriteLine("\n2. Configuración automática en EF Core 10:");
         Console.WriteLine("   protected override void OnConfiguring(DbContextOptionsBuilder options)");
         Console.WriteLine("   {");
         Console.WriteLine("       options.UseSqlServer(connection, o => o.UseAzureSql());");
-        // o compatibility level >= 170 (SQL Server 2025)");
-         Console.WriteLine("   }");
-         Console.WriteLine("   ");
-         Console.WriteLine("   ?? EF 10 usa autom�ticamente el tipo 'json'");
-         Console.WriteLine("   ?? No se requiere configuraci�n adicional");
+        Console.WriteLine("       // o compatibility level >= 170 (SQL Server 2025)");
+        Console.WriteLine("   }");
+        Console.WriteLine("   ");
+        Console.WriteLine("   ✅ EF 10 usa automáticamente el tipo 'json'");
+        Console.WriteLine("   🎯 No se requiere configuración adicional");
 
         // ===== 3. Crear datos con JSON =====
         Console.WriteLine("\n3. Trabajar con columnas JSON:");
@@ -72,7 +72,7 @@ public static class JsonTypeDemo
 
         context.Blogs.AddRange(blogs);
         await context.SaveChangesAsync();
-        Console.WriteLine("   ? Blogs con datos JSON creados");
+        Console.WriteLine("   ✅ Blogs con datos JSON creados");
 
         // ===== 4. Consultas sobre JSON =====
         Console.WriteLine("\n4. Consultas LINQ sobre propiedades JSON:");
@@ -81,7 +81,7 @@ public static class JsonTypeDemo
             .Where(b => b.Details.Viewers > 2000)
             .ToListAsync();
 
-        Console.WriteLine($"   ?? Blogs populares (>2000 viewers): {popularBlogs.Count}");
+        Console.WriteLine($"   📊 Blogs populares (>2000 viewers): {popularBlogs.Count}");
         foreach (var blog in popularBlogs)
         {
             Console.WriteLine($"     - {blog.Name}: {blog.Details.Viewers} viewers");
@@ -91,8 +91,8 @@ public static class JsonTypeDemo
         Console.WriteLine("   SELECT [b].[Id], [b].[Name], [b].[Details]");
         Console.WriteLine("   FROM [Blogs] AS [b]");
         Console.WriteLine("   WHERE JSON_VALUE([b].[Details], '$.Viewers' RETURNING int) > 2000");
-         Console.WriteLine("   ");
-         Console.WriteLine("   ?? Usa JSON_VALUE() con RETURNING clause");
+        Console.WriteLine("   ");
+        Console.WriteLine("   🔑 Usa JSON_VALUE() con RETURNING clause");
 
         // ===== 5. Primitive Collections =====
         Console.WriteLine("\n5. Primitive Collections como JSON:");
@@ -101,19 +101,19 @@ public static class JsonTypeDemo
             .Where(b => b.Tags.Contains("C#"))
             .ToListAsync();
 
-        Console.WriteLine($"   ?? Blogs con tag 'C#': {blogsWithCSharp.Count}");
+        Console.WriteLine($"   📊 Blogs con tag 'C#': {blogsWithCSharp.Count}");
         Console.WriteLine("   ");
-         Console.WriteLine("   CREATE TABLE Blogs ([Tags] json NOT NULL)");
-         Console.WriteLine("   ?? Arrays de strings almacenados como JSON");
+        Console.WriteLine("   CREATE TABLE Blogs ([Tags] json NOT NULL)");
+        Console.WriteLine("   🎯 Arrays de strings almacenados como JSON");
 
         // ===== 6. Complex Types en JSON =====
         Console.WriteLine("\n6. Complex Types mapeados a JSON:");
         Console.WriteLine("   modelBuilder.Entity<Blog>()");
         Console.WriteLine("       .ComplexProperty(b => b.Details, bd => bd.ToJson());");
-         Console.WriteLine("   ");
-         Console.WriteLine("   ?? Datos estructurados en una sola columna");
-         Console.WriteLine("   ?? Consultas eficientes sobre propiedades anidadas");
-         Console.WriteLine("   ?? Actualizaciones parciales con ExecuteUpdate");
+        Console.WriteLine("   ");
+        Console.WriteLine("   ✅ Datos estructurados en una sola columna");
+        Console.WriteLine("   ⚡ Consultas eficientes sobre propiedades anidadas");
+        Console.WriteLine("   🔄 Actualizaciones parciales con ExecuteUpdate");
 
         // ===== 7. Actualizaciones =====
         Console.WriteLine("\n7. Actualizar datos JSON:");
@@ -124,7 +124,7 @@ public static class JsonTypeDemo
                 .SetProperty(b => b.Details.Viewers, b => b.Details.Viewers + 100));
 
         var updated = await context.Blogs.FirstAsync(b => b.Name == "Tech Blog");
-        Console.WriteLine($"   ? Viewers actualizados: {updated.Details.Viewers}");
+        Console.WriteLine($"   ✅ Viewers actualizados: {updated.Details.Viewers}");
         Console.WriteLine("   ");
         Console.WriteLine("   SQL generado (SQL Server 2025):");
         Console.WriteLine("   UPDATE [Blogs]");
@@ -132,9 +132,9 @@ public static class JsonTypeDemo
         Console.WriteLine("       JSON_VALUE([Details], '$.Viewers' RETURNING int) + 100)");
         Console.WriteLine("   WHERE [Name] = 'Tech Blog'");
 
-        // ===== 8. Migraci�n desde nvarchar =====
-        Console.WriteLine("\n8. Migraci�n de nvarchar(max) a json:");
-        Console.WriteLine("   ??  Primera migraci�n despu�s de actualizar a EF 10:");
+        // ===== 8. Migración desde nvarchar =====
+        Console.WriteLine("\n8. Migración de nvarchar(max) a json:");
+        Console.WriteLine("   ⚠️  Primera migración después de actualizar a EF 10:");
         Console.WriteLine("   ");
         Console.WriteLine("   migrationBuilder.AlterColumn<string>(");
         Console.WriteLine("       name: \"Details\",");
@@ -149,11 +149,11 @@ public static class JsonTypeDemo
 
         // ===== 9. Beneficios =====
         Console.WriteLine("\n9. Beneficios del tipo 'json':");
-        Console.WriteLine("   ? Rendimiento: 20-30% m�s r�pido en operaciones JSON");
-        Console.WriteLine("   ? Validaci�n: JSON inv�lido rechazado a nivel de DB");
-        Console.WriteLine("   ? �ndices: Mejores opciones de indexaci�n");
-        Console.WriteLine("   ? Compatibilidad: Funciones JSON optimizadas");
-        Console.WriteLine("   ? Tama�o: Almacenamiento m�s eficiente");
+        Console.WriteLine("   ⚡ Rendimiento: 20-30% más rápido en operaciones JSON");
+        Console.WriteLine("   ✅ Validación: JSON inválido rechazado a nivel de DB");
+        Console.WriteLine("   📑 Índices: Mejores opciones de indexación");
+        Console.WriteLine("   🔧 Compatibilidad: Funciones JSON optimizadas");
+        Console.WriteLine("   💾 Tamaño: Almacenamiento más eficiente");
 
         // ===== 10. Consultas complejas =====
         Console.WriteLine("\n10. Consultas complejas sobre JSON:");
@@ -170,7 +170,7 @@ public static class JsonTypeDemo
             })
             .ToListAsync();
 
-        Console.WriteLine($"   ?? Res�menes generados: {blogSummaries.Count}");
+        Console.WriteLine($"   📊 Resúmenes generados: {blogSummaries.Count}");
         foreach (var summary in blogSummaries)
         {
             Console.WriteLine($"     - {summary.Name}:");
@@ -178,8 +178,8 @@ public static class JsonTypeDemo
             Console.WriteLine($"       Popular: {summary.IsPopular}");
         }
 
-        Console.WriteLine("\n?? El tipo 'json' mejora significativamente el rendimiento");
-        Console.WriteLine("?? Transici�n autom�tica en EF Core 10");
-        Console.WriteLine("?? Disponible en SQL Server 2025 y Azure SQL Database");
+        Console.WriteLine("\n🎯 El tipo 'json' mejora significativamente el rendimiento");
+        Console.WriteLine("🎯 Transición automática en EF Core 10");
+        Console.WriteLine("🎯 Disponible en SQL Server 2025 y Azure SQL Database");
     }
 }

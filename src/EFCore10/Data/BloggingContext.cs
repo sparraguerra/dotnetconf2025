@@ -10,12 +10,16 @@ public class BloggingContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Para la demo, usamos InMemory database
-        // Para SQL Server con vector support: optionsBuilder.UseSqlServer("connection_string")
-        optionsBuilder.UseInMemoryDatabase("BloggingDb");
-        
+        // SQL Server local - Cambia la cadena de conexión según tu instalación:
+        // LocalDB (Visual Studio): (localdb)\mssqllocaldb
+        // SQL Express: localhost\SQLEXPRESS
+        // SQL Server estándar: localhost
+        optionsBuilder.UseSqlServer(
+            @"Server=localhost;Database=EFCore10Demo;Trusted_Connection=True;TrustServerCertificate=True;");
+
         // EF Core 10: Logging con sensitive data (para demo)
         optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,23 +27,27 @@ public class BloggingContext : DbContext
         // EF Core 10: Complex types - Table splitting
         modelBuilder.Entity<Blog>(b =>
         {
-            // Complex type mapeado a columnas en la misma tabla
-            b.ComplexProperty(c => c.BillingAddress);
-            
-            // EF Core 10: Complex type - Con InMemory, no usamos ToJson() 
-            // En SQL Server: bd => bd.ToJson()
-            b.ComplexProperty(c => c.Details);
-            
-            // EF Core 10: Custom default constraint names (solo SQL Server)
-            // b.Property(blog => blog.CreatedDate)
-            //     .HasDefaultValueSql("GETDATE()", "DF_Blog_CreatedDate");
+            // Complex type mapeado a columnas en la misma tabla (table splitting)
+            // BillingAddress se mapea como columnas individuales en la tabla Blogs
+            b.ComplexProperty(e => e.BillingAddress);
+
+            // EF Core 10: Complex type mapeado a JSON column en SQL Server
+            // Details se almacena como columna JSON nativa
+            b.ComplexProperty(c => c.Details, cpb =>
+            {
+                cpb.ToJson(); // Mapea a columna JSON en SQL Server
+            });
+
+            // EF Core 10: Custom default constraint con valor SQL
+            b.Property(blog => blog.CreatedDate)
+                .HasDefaultValueSql("GETDATE()");
         });
 
         // EF Core 10: Named query filters
         modelBuilder.Entity<Post>()
             .HasQueryFilter("SoftDeletionFilter", p => !p.IsDeleted);
 
-        // EF Core 10: Named default constraints (solo SQL Server)
-        // modelBuilder.UseNamedDefaultConstraints();
+        // EF Core 10: Named default constraints
+        modelBuilder.UseNamedDefaultConstraints();
     }
 }

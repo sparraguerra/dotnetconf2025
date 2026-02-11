@@ -37,5 +37,5 @@ public struct Address
     public required string Street { get; set; }
     public required string City { get; set; }
     public required string PostalCode { get; set; }
-    public int StreetNumber { get; set; }
+    public required int StreetNumber { get; set; }
 }

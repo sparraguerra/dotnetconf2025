@@ -59,7 +59,7 @@ public static class NamedQueryFiltersDemo
         context.Blogs.Add(blog);
         context.Posts.AddRange(posts);
         await context.SaveChangesAsync();
-Console.WriteLine("✅ 1 blog con 3 posts creados (2 activos, 1 eliminado)\n");
+        Console.WriteLine("✅ 1 blog con 3 posts creados (2 activos, 1 eliminado)\n");
 
         // ===== 1. Query Filter aplicado por defecto =====
         Console.WriteLine("1. Query con filtro 'SoftDeletionFilter' aplicado por defecto:");
@@ -71,7 +71,7 @@ Console.WriteLine("✅ 1 blog con 3 posts creados (2 activos, 1 eliminado)\n");
             Console.WriteLine($"    - {post.Title} (IsDeleted: {post.IsDeleted})");
         }
 
-        // ===== 2. Ignorar Named Query Filter espec�fico =====
+        // ===== 2. Ignorar Named Query Filter específico =====
         Console.WriteLine("\n2. Ignorar el filtro 'SoftDeletionFilter':");
         
         var allPosts = await context.Posts
@@ -112,8 +112,8 @@ Console.WriteLine("✅ 1 blog con 3 posts creados (2 activos, 1 eliminado)\n");
 
         Console.WriteLine($"  📝 Blog '{blogWithActivePosts.Name}' con {blogWithActivePosts.Posts.Count} posts activos");
 
-        // ===== 6. Comparaci�n con/sin filtros =====
-        Console.WriteLine("\n6. Comparaci�n de resultados:");
+        // ===== 6. Comparación con/sin filtros =====
+        Console.WriteLine("\n6. Comparación de resultados:");
         
         var countWithFilter = await context.Posts.CountAsync();
         var countWithoutFilter = await context.Posts
