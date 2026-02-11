@@ -15,7 +15,7 @@ internal class ImplicitSpanConversion
         ProcessReadOnlySpan(numbers); // Conversión implícita
 
         // Span como receiver de métodos de extensión
-        Span<int> span = stackalloc int[] { 10, 20, 30 };
+        Span<int> span = [10, 20, 30];
         Console.WriteLine($"Span sum: {span.Sum()}"); // Extension method
 
         // Composición con otras conversiones

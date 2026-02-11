@@ -36,6 +36,10 @@ internal class ExtensionBlock
         var result = list1.Concat(list2);
         Console.WriteLine($"Using Concat: {string.Join(", ", result)}");
 
+        // Propiedad estática regular
+        IEnumerable<int> identity = EnumerableExtensions.get_Identity<int>();
+        Console.WriteLine($"Identity IsEmpty: {identity.IsEmpty}");
+
         // operador +
         var resultAddOperator = list1 + list2;
         Console.WriteLine($"Using Operator +: {string.Join(", ", resultAddOperator)}");

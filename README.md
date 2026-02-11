@@ -227,3 +227,201 @@ dotnet run
 ---
 
 **Creado para demostrar las diferencias entre C# 13 y C# 14** 🚀
+
+
+---
+
+# 🔶 Entity Framework Core 10 - Nuevas Características 
+
+Este proyecto de consola .NET 10 demuestra las principales características nuevas de Entity Framework Core 10, la versión LTS lanzada en noviembre de 2025.
+
+## 🚀 Características Demostradas
+
+### 1. **Complex Types** 📦
+- **Table Splitting**: Mapear tipos complejos a columnas adicionales en la misma tabla
+- **JSON Mapping**: Mapear tipos complejos a columnas JSON
+- **Optional Complex Types**: Soporte para tipos complejos opcionales
+- **Struct Support**: Usar structs en lugar de clases para complex types
+- **Value Semantics**: Comportamiento correcto a diferencia de owned entities
+
+### 2. **ExecuteUpdate para JSON Columns** 🔄
+- Actualización eficiente de propiedades dentro de columnas JSON
+- Bulk updates sin cargar datos en memoria
+- Sintaxis de lambda regular (no solo expression trees)
+- Soporte completo para el método `modify()` en SQL Server 2025
+
+### 3. **Named Query Filters** 🏷️
+- Múltiples filtros con nombres en una misma entidad
+- Ignorar filtros específicos por nombre
+- Útil para soft deletion, multi-tenancy, etc.
+
+### 4. **Mejoras en LINQ y Traducción SQL** 🔍
+- **Parameterized Collections**: Nueva estrategia con múltiples parámetros
+- **Parameter Padding**: Reducción de plan cache bloat
+- **LeftJoin/RightJoin**: Operadores de .NET 10 soportados
+- **Split Queries**: Ordenamiento consistente mejorado
+- Nuevas traducciones: DateOnly, Microsecond, Nanosecond, etc.
+
+### 5. **Vector Search** 🤖 (SQL Server 2025/Azure SQL)
+- Tipo de datos `vector(n)` para almacenar embeddings
+- Función `VECTOR_DISTANCE()` para similarity search
+- Ideal para RAG, semantic search y aplicaciones AI
+- Métricas: cosine, euclidean, dot product
+
+### 6. **JSON Data Type** 📄 (SQL Server 2025/Azure SQL)
+- Nuevo tipo `json` nativo en lugar de `nvarchar(max)`
+- Mejor rendimiento (20-30% más rápido)
+- Validación automática de JSON
+- Optimizaciones específicas para operaciones JSON
+- Migración automática desde `nvarchar(max)`
+
+### 7. **Otras Mejoras** ⚡
+- Custom default constraint names
+- Redacción de datos sensibles en logs por defecto
+- Advertencias de seguridad para SQL injection
+- Mejoras en la experiencia con Azure Cosmos DB
+
+## 📋 Requisitos
+
+- .NET 10 SDK
+- Entity Framework Core 10.0.0
+
+Para usar Vector Search y el tipo JSON nativo, necesitas:
+- SQL Server 2025 o
+- Azure SQL Database
+
+## 🏃 Cómo Ejecutar
+
+```bash
+cd src/EFCore10
+dotnet run
+```
+
+## 📁 Estructura del Proyecto
+
+```
+EFCore10/
+├── Models/
+│   ├── Blog.cs          # Entidad con complex types
+│   └── Post.cs          # Entidad con soft deletion
+├── Data/
+│   └── BloggingContext.cs  # DbContext con configuraciones
+├── Features/
+│   ├── ComplexTypesDemo.cs           # Demo de complex types
+│   ├── ExecuteUpdateJsonDemo.cs      # Demo de ExecuteUpdate con JSON
+│   ├── NamedQueryFiltersDemo.cs      # Demo de query filters con nombre
+│   ├── LinqImprovementsDemo.cs       # Demo de mejoras LINQ
+│   ├── VectorSearchDemo.cs           # Demo conceptual de vector search
+│   └── JsonTypeDemo.cs               # Demo del tipo JSON nativo
+└── Program.cs
+```
+
+## 🔑 Conceptos Clave
+
+### Complex Types vs Owned Entities
+
+**Complex Types** (EF Core 10):
+```csharp
+modelBuilder.Entity<Blog>()
+    .ComplexProperty(b => b.Details, bd => bd.ToJson());
+```
+- Value semantics (no identidad)
+- Asignaciones funcionan correctamente
+- Soportan ExecuteUpdate
+- Comparaciones por valor
+
+**Owned Entities** (versiones anteriores):
+```csharp
+modelBuilder.Entity<Blog>()
+    .OwnsOne(b => b.Details, od => od.ToJson());
+```
+- Reference semantics (tienen identidad)
+- Problemas con asignaciones múltiples
+- No soportan ExecuteUpdate
+- Comparaciones por identidad
+
+### Vector Search
+
+```csharp
+// Definir propiedad vector
+[Column(TypeName = "vector(1536)")]
+public SqlVector<float> Embedding { get; set; }
+
+// Búsqueda por similitud
+var results = context.Blogs
+    .OrderBy(b => EF.Functions.VectorDistance("cosine", b.Embedding, queryVector))
+    .Take(5)
+    .ToListAsync();
+```
+
+### Named Query Filters
+
+```csharp
+// Configuración
+modelBuilder.Entity<Post>()
+    .HasQueryFilter("SoftDeletionFilter", p => !p.IsDeleted)
+    .HasQueryFilter("TenantFilter", p => p.TenantId == currentTenantId);
+
+// Uso - ignorar solo soft deletion
+var allPosts = context.Posts
+    .IgnoreQueryFilters(["SoftDeletionFilter"])
+    .ToListAsync();
+```
+
+## 📚 Recursos
+
+- [EF Core 10 What's New](https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-10.0/whatsnew)
+- [Complex Types Documentation](https://learn.microsoft.com/en-us/ef/core/modeling/complex-types)
+- [Vector Search in SQL Server](https://learn.microsoft.com/en-us/ef/core/providers/sql-server/vector-search)
+- [Query Filters](https://learn.microsoft.com/en-us/ef/core/querying/filters)
+
+## 🎯 Casos de Uso Reales
+
+### Complex Types
+- Direcciones, información de contacto
+- Configuraciones y preferencias
+- Datos de auditoría
+- Metadatos estructurados
+
+### Vector Search
+- Semantic search en documentos
+- RAG (Retrieval-Augmented Generation)
+- Sistemas de recomendación
+- Búsqueda de imágenes similares
+
+### Named Query Filters
+- Soft deletion
+- Multi-tenancy
+- Filtros de seguridad por rol
+- Filtros de regionalización
+
+## ⚠️ Notas Importantes
+
+1. **InMemory Database**: Esta demo usa InMemory database para simplificar. En producción:
+   - Usa SQL Server 2025 o Azure SQL para vector search y JSON type
+   - Configura la cadena de conexión apropiada
+   - Ejecuta migraciones
+
+2. **Migraciones**: Al actualizar de EF Core 9 a 10:
+   - Las columnas `nvarchar(max)` con JSON se convertirán a tipo `json`
+   - Usa `HasColumnType("nvarchar(max)")` si quieres mantener el tipo anterior
+
+3. **Breaking Changes**: Revisa los [breaking changes](https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-10.0/breaking-changes) antes de actualizar proyectos existentes
+
+## 📊 Comparación: Complex Types vs Owned Entities
+
+| Característica | Owned Entities | Complex Types (EF 10) |
+|---------------|----------------|----------------------|
+| Semantics | Reference | Value ✅ |
+| Asignaciones múltiples | ❌ Error | ✅ Funciona |
+| ExecuteUpdate | ❌ No soportado | ✅ Soportado |
+| Comparaciones | Por identidad | Por valor ✅ |
+| Struct support | ❌ | ✅ |
+
+## 📄 Licencia
+
+Este proyecto es de ejemplo educativo para DotNet Conf 2025.
+
+---
+
+**Creado para demostrar Entity Framework Core 10 - .NET 10** 🚀

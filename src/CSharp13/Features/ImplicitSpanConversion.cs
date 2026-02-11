@@ -15,7 +15,7 @@ internal class ImplicitSpanConversion
         ProcessReadOnlySpan(numbers.AsSpan()); // Conversión explícita
 
         // Span como receiver de métodos de extensión
-        Span<int> span = stackalloc int[] { 10, 20, 30 };
+        Span<int> span = [10, 20, 30];
         Console.WriteLine($"Span sum: {SpanExtensions.Sum(span)}"); // Llamada explícita
 
         // Conversión explícita de string a ReadOnlySpan<char>
@@ -23,7 +23,7 @@ internal class ImplicitSpanConversion
         ProcessReadOnlySpan(text.AsSpan()); // Conversión explícita
 
         // Type inference requiere más ayuda
-        var result = CreateSpan(new[] { 1, 2, 3, 4, 5 });
+        var result = CreateSpan([1, 2, 3, 4, 5]);
         Console.WriteLine($"Created span length: {result.Length}");
     }
 
