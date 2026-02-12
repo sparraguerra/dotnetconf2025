@@ -40,7 +40,7 @@ public class BloggingContext : DbContext
 
             // EF Core 10: Custom default constraint con valor SQL
             b.Property(blog => blog.CreatedDate)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("GETDATE()", "DF_Blog_CreatedDate" );
         });
 
         // EF Core 10: Named query filters
