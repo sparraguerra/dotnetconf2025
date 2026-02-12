@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Data.SqlTypes;
 
 namespace EFCore10.Models;
 
@@ -8,6 +9,8 @@ public class Blog
     public required string Name { get; set; }
     public string[] Tags { get; set; } = [];
     public DateTime CreatedDate { get; set; }
+    public DateOnly? PublishedDate { get; set; }
+    public TimeOnly? PublishedTime { get; set; }
     
     // EF Core 10: Complex types - Optional complex type
     public Address? BillingAddress { get; set; }
@@ -16,9 +19,9 @@ public class Blog
     public required BlogDetails Details { get; set; }
     
     // EF Core 10: Vector search support (SQL Server 2025)
-    // Nota: SqlVector requiere Microsoft.Data.SqlClient con soporte para SQL Server 2025
-    // [Column(TypeName = "vector(1536)")]
-    // public SqlVector<float>? Embedding { get; set; }
+    // Usando SqlVector<float> del namespace Microsoft.Data.SqlTypes
+    [Column(TypeName = "vector(1536)")]
+    public SqlVector<float>? Embedding { get; set; }
     
     public ICollection<Post> Posts { get; set; } = [];
 }

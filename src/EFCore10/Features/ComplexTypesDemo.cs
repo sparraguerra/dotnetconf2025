@@ -65,12 +65,12 @@ public static class ComplexTypesDemo
 
         // ===== 3. Consultas sobre Complex Types =====
         Console.WriteLine("\n3. Consultas sobre Complex Types:");
-        Console.WriteLine("  Nota: InMemory DB requiere client evaluation para complex types");
-        
-        // Con SQL Server, esto se traduce directamente a SQL
-        // SELECT * FROM Blogs WHERE JSON_VALUE(Details, '$.Viewers') > 3000
-        var allBlogs = await context.Blogs.ToListAsync();
-        var highlyViewedBlogs = allBlogs.Where(b => b.Details.Viewers > 3000).ToList();
+        Console.WriteLine("  Con SQL Server, esto se traduce directamente a SQL");
+
+        // SQL Server traduce esto a consultas eficientes sobre las columnas del complex type
+        var highlyViewedBlogs = await context.Blogs
+            .Where(b => b.Details.Viewers > 3000)
+            .ToListAsync();
 
         Console.WriteLine($"  📊 Blogs con más de 3000 viewers: {highlyViewedBlogs.Count}");
         foreach (var blog in highlyViewedBlogs)
@@ -120,7 +120,7 @@ public static class ComplexTypesDemo
 
         // ===== 6. Comparación de Complex Types =====
         Console.WriteLine("\n6. Comparación de Complex Types en queries:");
-        
+
         var searchAddress = new Address
         {
             Street = "Main St",
@@ -128,15 +128,22 @@ public static class ComplexTypesDemo
             City = "Madrid",
             PostalCode = "28001"
         };
-        
-        // Con complex types, la comparación es por valor
-        // (Con owned entities compararía por identidad)
-        // InMemory DB requiere client evaluation
-        var allBlogsForFiltering = await context.Blogs.ToListAsync();
-        var blogsInMadrid = allBlogsForFiltering
-            .Where(b => b.BillingAddress != null && b.BillingAddress.Value.City == "Madrid")
-            .ToList();
 
-        Console.WriteLine($"  📍 Blogs en Madrid: {blogsInMadrid.Count}");
+        // Con complex types, la comparación es por valor
+        // Comparamos si el address completo coincide (todos los campos)
+        // EF Core traduce esto directamente a SQL
+        var blogsWithExactAddress = await context.Blogs
+            .Where(b => b.BillingAddress.HasValue && 
+                       b.BillingAddress.Value.Equals(searchAddress))
+            .ToListAsync();
+
+        Console.WriteLine($"  🎯 Blogs con dirección exacta (Main St 123, Madrid): {blogsWithExactAddress.Count}");
+
+        // También podemos filtrar por propiedades individuales directamente en la query
+        var blogsInMadrid = await context.Blogs
+            .Where(b => b.BillingAddress.HasValue && b.BillingAddress.Value.City == "Madrid")
+            .ToListAsync();
+
+        Console.WriteLine($"  📍 Blogs en Madrid (cualquier dirección): {blogsInMadrid.Count}");
     }
 }

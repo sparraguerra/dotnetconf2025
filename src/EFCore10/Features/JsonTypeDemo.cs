@@ -10,7 +10,7 @@ public static class JsonTypeDemo
     {
         Console.WriteLine("\n=== EF Core 10: JSON Data Type Support ===\n");
         Console.WriteLine("⚠️  NOTA: El nuevo tipo 'json' requiere SQL Server 2025 o Azure SQL");
-        Console.WriteLine("Esta demo usa InMemory database, pero muestra los conceptos\n");
+        Console.WriteLine("Esta demo usa SQL Server\n");
 
         using var context = new BloggingContext();
         await context.Database.EnsureDeletedAsync();

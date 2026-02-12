@@ -22,6 +22,8 @@ public static class LinqImprovementsDemo
                 Name = "Tech Blog",
                 Tags = ["C#", "Technology"],
                 CreatedDate = DateTime.Now.AddDays(-10),
+                PublishedDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-10)),
+                PublishedTime = new TimeOnly(9, 0),
                 Details = new BlogDetails { Description = "Tech content", Viewers = 1000, LastUpdated = DateTime.Now }
             },
             new Blog
@@ -29,6 +31,8 @@ public static class LinqImprovementsDemo
                 Name = "Gaming Blog",
                 Tags = ["Games", "Reviews"],
                 CreatedDate = DateTime.Now.AddDays(-5),
+                PublishedDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-5)),
+                PublishedTime = new TimeOnly(14, 30),
                 Details = new BlogDetails { Description = "Gaming content", Viewers = 5000, LastUpdated = DateTime.Now }
             },
             new Blog
@@ -36,6 +40,8 @@ public static class LinqImprovementsDemo
                 Name = "Food Blog",
                 Tags = ["Recipes", "Cooking"],
                 CreatedDate = DateTime.Now.AddDays(-3),
+                PublishedDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-3)),
+                PublishedTime = new TimeOnly(18, 45),
                 Details = new BlogDetails { Description = "Food content", Viewers = 3000, LastUpdated = DateTime.Now }
             }
         };
@@ -92,17 +98,45 @@ public static class LinqImprovementsDemo
         Console.WriteLine($"  📊 Blogs con tags específicos: {blogsWithTags.Count}");
         Console.WriteLine("  🔑 EF.Constant() permite controlar el modo de traducción");
 
-        // ===== 4. LeftJoin operator (conceptual con InMemory) =====
+        // ===== 4. LeftJoin operator =====
         Console.WriteLine("\n4. LEFT JOIN operator de .NET 10:");
         Console.WriteLine("  🔑 Sintaxis simplificada para LEFT JOIN");
         Console.WriteLine("  🔑 Antes: GroupJoin + SelectMany + DefaultIfEmpty");
         Console.WriteLine("  🔑 Ahora: LeftJoin método directo");
-        Console.WriteLine("  📝 Ejemplo conceptual:");
-        Console.WriteLine("      var query = context.Blogs");
-        Console.WriteLine("          .LeftJoin(context.Posts,");
-        Console.WriteLine("              blog => blog.Id,");
-        Console.WriteLine("              post => post.BlogId,");
-        Console.WriteLine("              (blog, post) => new { blog, post });");
+
+        // Método tradicional (verboso)
+        var traditionalLeftJoin = await context.Blogs
+            .GroupJoin(
+                context.Posts,
+                blog => blog.Id,
+                post => post.BlogId,
+                (blog, posts) => new { blog, posts })
+            .SelectMany(
+                x => x.posts.DefaultIfEmpty(),
+                (x, post) => new { x.blog.Name, PostTitle = post != null ? post.Title : "Sin posts" })
+            .ToListAsync();
+
+        Console.WriteLine($"  📊 Método tradicional - {traditionalLeftJoin.Count} resultados:");
+        foreach (var item in traditionalLeftJoin.Take(5))
+        {
+            Console.WriteLine($"    - {item.Name}: {item.PostTitle}");
+        }
+
+        // Método nuevo con LeftJoin (más limpio)
+        var newLeftJoin = await context.Blogs
+            .LeftJoin(
+                context.Posts,
+                blog => blog.Id,
+                post => post.BlogId,
+                (blog, post) => new { blog.Name, PostTitle = post != null ? post.Title : "Sin posts" })
+            .ToListAsync();
+
+        Console.WriteLine($"\n  📊 Método LeftJoin nuevo - {newLeftJoin.Count} resultados:");
+        foreach (var item in newLeftJoin.Take(5))
+        {
+            Console.WriteLine($"    - {item.Name}: {item.PostTitle}");
+        }
+        Console.WriteLine("  🔑 SQL generado: LEFT JOIN más directo y legible");
 
         // ===== 5. Split Queries con ordenamiento consistente =====
         Console.WriteLine("\n5. Split Queries con ordenamiento consistente:");
@@ -123,10 +157,68 @@ public static class LinqImprovementsDemo
 
         // ===== 6. Traducciones mejoradas de DateOnly =====
         Console.WriteLine("\n6. Nuevas traducciones de fecha/hora:");
-        Console.WriteLine("  📅 DateOnly.ToDateTime() - Convertir DateOnly a DateTime");
-        Console.WriteLine("  📅 DateOnly.DayNumber - Obtener número de día");
-        Console.WriteLine("  📅 DatePart.Microsecond y Nanosecond - Precisión mejorada");
-        Console.WriteLine("  🔑 COALESCE optimizado como ISNULL en SQL Server");
+
+        // 6.1. DateOnly.ToDateTime() - Nueva traducción en EF Core 10
+        Console.WriteLine("\n  📅 DateOnly.ToDateTime() - Convertir DateOnly a DateTime:");
+        var blogsWithDateTime = await context.Blogs
+            .Where(b => b.PublishedDate != null)
+            .Select(b => new
+            {
+                b.Name,
+                PublishedAsDateTime = b.PublishedDate!.Value.ToDateTime(TimeOnly.MinValue)
+            })
+            .ToListAsync();
+
+        foreach (var blog in blogsWithDateTime)
+        {
+            Console.WriteLine($"    - {blog.Name}: {blog.PublishedAsDateTime:yyyy-MM-dd}");
+        }
+        Console.WriteLine("    🔑 SQL: CAST o CONVERT del valor date a datetime");
+
+        // 6.2. DateOnly.DayNumber - Nueva traducción en EF Core 10
+        Console.WriteLine("\n  📅 DateOnly.DayNumber - Obtener número de día:");
+        var blogsByDayNumber = await context.Blogs
+            .Where(b => b.PublishedDate != null)
+            .Select(b => new
+            {
+                b.Name,
+                DayNumber = b.PublishedDate!.Value.DayNumber
+            })
+            .ToListAsync();
+
+        foreach (var blog in blogsByDayNumber)
+        {
+            Console.WriteLine($"    - {blog.Name}: Day #{blog.DayNumber}");
+        }
+        Console.WriteLine("    🔑 SQL: DATEDIFF(day, '0001-01-01', [PublishedDate])");
+
+        // 6.3. Comparación de fechas mejorada
+        Console.WriteLine("\n  📅 Comparaciones de DateOnly optimizadas:");
+        var recentlyPublished = await context.Blogs
+            .Where(b => b.PublishedDate != null && 
+                        b.PublishedDate.Value > DateOnly.FromDateTime(DateTime.Now.AddDays(-7)))
+            .CountAsync();
+
+        Console.WriteLine($"    - Blogs publicados en los últimos 7 días: {recentlyPublished}");
+        Console.WriteLine("    🔑 SQL optimizado para comparaciones de DATE");
+
+        // 6.4. COALESCE optimizado como ISNULL en SQL Server
+        Console.WriteLine("\n  📅 COALESCE optimizado como ISNULL:");
+        var blogsWithDefault = await context.Blogs
+            .Select(b => new
+            {
+                b.Name,
+                PublishedDate = b.PublishedDate ?? DateOnly.FromDateTime(DateTime.Now)
+            })
+            .ToListAsync();
+
+        Console.WriteLine($"    - Total blogs: {blogsWithDefault.Count}");
+        foreach (var blog in blogsWithDefault.Take(3))
+        {
+            Console.WriteLine($"      {blog.Name}: {blog.PublishedDate}");
+        }
+        Console.WriteLine("    🔑 SQL: ISNULL([PublishedDate], CAST(GETDATE() AS date))");
+        Console.WriteLine("    🔑 ISNULL es más eficiente que COALESCE en SQL Server");
 
         // ===== 7. Optimizaciones de LINQ =====
         Console.WriteLine("\n7. Optimizaciones de consultas:");
